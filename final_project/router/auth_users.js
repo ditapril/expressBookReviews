@@ -64,16 +64,26 @@ regd_users.post("/login", (req,res) => {
 regd_users.put("/auth/review/:isbn", (req, res) => {
   //Write your code here
   // Extract email parameter from request URL
-    const username = req.params.username;
-    let friend = users[username];  // Retrieve friend object associated with email
-    if (friend) {  // Check if friend exists
-    //     let review = {
-    //         username : username,
-    //         content : req.body.review
-    //     }
+    const username = req.query.username;
+    // console.log(users)
+    // console.log(req)
+    let filteredEntries = users.filter(user => user.username === username);
+    // console.log(filteredEntries)
+    if (filteredEntries) {  // Check if friend exists
+        const content = {
+            username: username,
+            review: req.body.review
+        };
+
+        // const review = Object.entries(books[req.params.isbn].reviews).filter(([key, review]) => review.username === username);
         
-    // const filteredEntries = Object.entries(books[isbn]).filter(([key, review]) => review.username === username);
-    //     filteredEntries = review;  // Update friend details in 'friends' object
+        // if(review){
+        //     books[req.params.isbn].reviews.push(content);
+        // } else {
+            books[req.params.isbn].reviews[username] = req.body.review
+        // }
+        // console.log(review)
+        console.log(books)
         res.send(`Book review by ${username} updated.`);
     } else {
         // Respond if friend with specified email is not found
@@ -81,6 +91,29 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
     }
 });
 
+
+// Delete a book review
+regd_users.delete("/auth/review/:isbn", (req, res) => {
+  //Write your code here
+  // Extract email parameter from request URL
+    const username = req.query.username;
+    console.log(users)
+    let filteredEntries = users.filter((user) => user.username === username);
+    console.log(filteredEntries)
+    if (filteredEntries) {  // Check if friend exists
+    //     let review = {
+    //         username : username,
+    //         content : req.body.review
+    //     }
+        delete(books[req.params.isbn].reviews[username])
+    // const filteredEntries = Object.entries(books[isbn]).filter(([key, review]) => review.username === username);
+    //     filteredEntries = review;  // Update friend details in 'friends' object
+        res.send(`Book review by ${username} deleted.`);
+    } else {
+        // Respond if friend with specified email is not found
+        res.send("Unable to find user!");
+    }
+});
 
 module.exports.authenticated = regd_users;
 module.exports.isValid = isValid;
